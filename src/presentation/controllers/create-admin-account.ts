@@ -1,11 +1,13 @@
-import { httpRequest, httpResponse, envChecker } from '../protocols'
+import { httpRequest, httpResponse, envChecker, addAdminAccount } from '../protocols'
 import { badRequest } from '../helpers/bad-request'
 
 export class CreateAdminAccount {
   private readonly envChecker: envChecker
+  private readonly AddAdminAccount: addAdminAccount
 
-  constructor (envChecker: envChecker) {
+  constructor (envChecker: envChecker, AddAdminAccount: addAdminAccount) {
     this.envChecker = envChecker
+    this.AddAdminAccount = AddAdminAccount
   }
 
   handle (request: httpRequest): httpResponse {
@@ -20,5 +22,12 @@ export class CreateAdminAccount {
     const responseEnvChecker = this.envChecker.check(request.body.key)
 
     if (responseEnvChecker.isError) return badRequest(responseEnvChecker.message)
+
+    this.AddAdminAccount.add(request.body)
+
+    return {
+      status: 200,
+      body: 'The manager account has been created'
+    }
   }
 }
