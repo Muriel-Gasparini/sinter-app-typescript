@@ -10,7 +10,7 @@ export class CreateAdminAccount {
     this.AddAdminAccount = AddAdminAccount
   }
 
-  handle (request: httpRequest): httpResponse {
+  async handle (request: httpRequest): Promise<httpResponse> {
     if (Object.keys(request.body).length === 0) return badRequest('It is not possible to send empty data')
 
     const requiredInputs = ['name', 'password', 'key']
@@ -23,7 +23,7 @@ export class CreateAdminAccount {
 
     if (responseEnvChecker.isError) return badRequest(responseEnvChecker.message)
 
-    this.AddAdminAccount.add(request.body)
+    await this.AddAdminAccount.add(request.body)
 
     return {
       status: 200,

@@ -5,7 +5,7 @@ import { envChecker, responseEnvChecker } from '../protocols'
 
 const makeAddAdminAccount = (): addAdminAccount => {
   class AddAdminAccountStub implements addAdminAccount {
-    add (account: account): adminModel {
+    async add (account: account): Promise<adminModel> {
       return {
         id: 'any_id',
         name: 'any_name',
@@ -45,17 +45,17 @@ const makeSut = (): sutTypes => {
 }
 
 describe('Create Admin Account', () => {
-  test('Should return 400 if empty body is provided', () => {
+  test('Should return 400 if empty body is provided', async () => {
     const { sut } = makeSut()
     const httpRequest = {
       body: {}
     }
-    const response = sut.handle(httpRequest)
+    const response = await sut.handle(httpRequest)
     expect(response.status).toBe(400)
     expect(response.body).toBe('It is not possible to send empty data')
   })
 
-  test('Should return 400 if invalid body is provided', () => {
+  test('Should return 400 if invalid body is provided', async () => {
     const { sut } = makeSut()
     const httpRequest = {
       body: {
@@ -63,12 +63,12 @@ describe('Create Admin Account', () => {
         password: 'any_password'
       }
     }
-    const response = sut.handle(httpRequest)
+    const response = await sut.handle(httpRequest)
     expect(response.status).toBe(400)
     expect(response.body).toBe('Make sure you have sent all the required fields')
   })
 
-  test('Make sure envChecker return 400 if invalid key is provided', () => {
+  test('Make sure envChecker return 400 if invalid key is provided', async () => {
     const { sut, envCheckerStub } = makeSut()
     jest.spyOn(envCheckerStub, 'check').mockReturnValueOnce({ isError: true, message: 'The provided key is invalid' })
     const httpRequest = {
@@ -78,12 +78,12 @@ describe('Create Admin Account', () => {
         key: 'invalid_key'
       }
     }
-    const response = sut.handle(httpRequest)
+    const response = await sut.handle(httpRequest)
     expect(response.status).toBe(400)
     expect(response.body).toBe('The provided key is invalid')
   })
 
-  test('Make sure AddAdminAccount is called if the correct body is sent', () => {
+  test('Make sure AddAdminAccount is called if the correct body is sent', async () => {
     const { sut, AddAdminAccountStub } = makeSut()
     const AddAdminAccountStubRequest = jest.spyOn(AddAdminAccountStub, 'add')
     const httpRequest = {
@@ -93,7 +93,7 @@ describe('Create Admin Account', () => {
         key: 'valid_key'
       }
     }
-    const response = sut.handle(httpRequest)
+    const response = await sut.handle(httpRequest)
     expect(AddAdminAccountStubRequest).toHaveBeenCalledWith(httpRequest.body)
     expect(response.status).toBe(200)
     expect(response.body).toBe('The manager account has been created')

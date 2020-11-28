@@ -6,5 +6,5 @@ export interface account {
 }
 
 export interface addAdminAccount {
-  add: (account: account) => adminModel
+  add: (account: account) => Promise<adminModel>
 }
