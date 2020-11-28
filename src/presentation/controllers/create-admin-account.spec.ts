@@ -1,8 +1,12 @@
 import { CreateAdminAccount } from './create-admin-account'
 
+const makeSut = (): CreateAdminAccount => {
+  return new CreateAdminAccount()
+}
+
 describe('Create Admin Account', () => {
   test('Should return 400 if empty body is provided', () => {
-    const sut = new CreateAdminAccount()
+    const sut = makeSut()
     const httpRequest = {
       body: {}
     }
