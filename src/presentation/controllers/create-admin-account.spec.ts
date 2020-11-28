@@ -1,5 +1,20 @@
 import { CreateAdminAccount } from './create-admin-account'
+import { addAdminAccount, account } from '../../domain/usecases/add-admin-account'
+import { adminModel } from '../../domain/model/admin'
 import { envChecker, responseEnvChecker } from '../protocols'
+
+const makeAddAdminAccount = (): addAdminAccount => {
+  class AddAdminAccountStub implements addAdminAccount {
+    add (account: account): adminModel {
+      return {
+        id: 'any_id',
+        name: 'any_name',
+        password: 'any_password'
+      }
+    }
+  }
+  return new AddAdminAccountStub()
+}
 
 const makeEnvChecker = (): envChecker => {
   class EnvCheckerStub implements envChecker {
@@ -15,14 +30,17 @@ const makeEnvChecker = (): envChecker => {
 interface sutTypes {
   sut: CreateAdminAccount
   envCheckerStub: envChecker
+  AddAdminAccountStub: addAdminAccount
 }
 
 const makeSut = (): sutTypes => {
   const envCheckerStub = makeEnvChecker()
-  const sut = new CreateAdminAccount(envCheckerStub)
+  const AddAdminAccountStub = makeAddAdminAccount()
+  const sut = new CreateAdminAccount(envCheckerStub, AddAdminAccountStub)
   return {
     sut,
-    envCheckerStub
+    envCheckerStub,
+    AddAdminAccountStub
   }
 }
 
@@ -63,5 +81,21 @@ describe('Create Admin Account', () => {
     const response = sut.handle(httpRequest)
     expect(response.status).toBe(400)
     expect(response.body).toBe('The provided key is invalid')
+  })
+
+  test('Make sure AddAdminAccount is called if the correct body is sent', () => {
+    const { sut, AddAdminAccountStub } = makeSut()
+    const AddAdminAccountStubRequest = jest.spyOn(AddAdminAccountStub, 'add')
+    const httpRequest = {
+      body: {
+        name: 'any_name',
+        password: 'any_password',
+        key: 'valid_key'
+      }
+    }
+    const response = sut.handle(httpRequest)
+    expect(AddAdminAccountStubRequest).toHaveBeenCalledWith(httpRequest.body)
+    expect(response.status).toBe(200)
+    expect(response.body).toBe('The manager account has been created')
   })
 })
