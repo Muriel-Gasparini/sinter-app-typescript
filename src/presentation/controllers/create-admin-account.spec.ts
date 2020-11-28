@@ -12,6 +12,7 @@ describe('Create Admin Account', () => {
     }
     const response = sut.handle(httpRequest)
     expect(response.status).toBe(400)
+    expect(response.body).toBe('It is not possible to send empty data')
   })
 
   test('Should return 400 if invalid body is provided', () => {
@@ -24,5 +25,6 @@ describe('Create Admin Account', () => {
     }
     const response = sut.handle(httpRequest)
     expect(response.status).toBe(400)
+    expect(response.body).toBe('Make sure you have sent all the required fields')
   })
 })
