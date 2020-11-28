@@ -1,5 +1,5 @@
 import { httpRequest, httpResponse, envChecker, addAdminAccount } from '../protocols'
-import { badRequest } from '../helpers/bad-request'
+import { badRequest, okRequest } from '../helpers'
 
 export class CreateAdminAccount {
   private readonly envChecker: envChecker
@@ -25,9 +25,6 @@ export class CreateAdminAccount {
 
     await this.AddAdminAccount.add(request.body)
 
-    return {
-      status: 200,
-      body: 'The manager account has been created'
-    }
+    return okRequest('The manager account has been created')
   }
 }
