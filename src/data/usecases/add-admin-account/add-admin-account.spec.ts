@@ -1,5 +1,7 @@
-import { encrypter } from './add-admin-account-protocols'
+import { encrypter, addAdminAccountRepository } from './add-admin-account-protocols'
 import { AddAdminAccount } from './add-admin-account'
+import { adminModel } from '../../../domain/model/admin'
+import { account } from '../../../domain/usecases/add-admin-account'
 
 const makeEncrypter = (): encrypter => {
   class EncrypterStub implements encrypter {
@@ -10,17 +12,33 @@ const makeEncrypter = (): encrypter => {
   return new EncrypterStub()
 }
 
+const makeAddAdminAccountRepository = (): addAdminAccountRepository => {
+  class AddAdminAccountRepositoryStub implements addAdminAccountRepository {
+    async add (account: account): Promise<adminModel> {
+      return await new Promise(resolve => resolve({
+        id: 'any_id',
+        name: 'any_name',
+        password: 'hashed_password'
+      }))
+    }
+  }
+  return new AddAdminAccountRepositoryStub()
+}
+
 interface sutTypes {
   sut: AddAdminAccount
   EncrypterStub: encrypter
+  AddAdminAccountRepositoryStub: addAdminAccountRepository
 }
 
 const makeSut = (): sutTypes => {
   const EncrypterStub = makeEncrypter()
-  const sut = new AddAdminAccount(EncrypterStub)
+  const AddAdminAccountRepositoryStub = makeAddAdminAccountRepository()
+  const sut = new AddAdminAccount(EncrypterStub, AddAdminAccountRepositoryStub)
   return {
     sut,
-    EncrypterStub
+    EncrypterStub,
+    AddAdminAccountRepositoryStub
   }
 }
 
@@ -34,5 +52,24 @@ describe('AddAdminAccount', () => {
     }
     await sut.add(account)
     expect(encrypterStubCall).toHaveBeenCalledWith(account.password)
+  })
+
+  test('ensure that AddAdminAccountRepository is called with the account containing the encrypted password', async () => {
+    const { sut, AddAdminAccountRepositoryStub } = makeSut()
+    const StubCall = jest.spyOn(AddAdminAccountRepositoryStub, 'add')
+    const account = {
+      name: 'any_name',
+      password: 'any_password'
+    }
+    const response = await sut.add(account)
+    expect(StubCall).toHaveBeenCalledWith({
+      name: 'any_name',
+      password: 'hashed_password'
+    })
+    expect(response).toEqual({
+      id: 'any_id',
+      name: 'any_name',
+      password: 'hashed_password'
+    })
   })
 })
