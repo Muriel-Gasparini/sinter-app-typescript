@@ -11,9 +11,11 @@
   "author": "Muriel Gasparini",
   "license": "ISC",
   "devDependencies": {
+    "@shelf/jest-mongodb": "^1.2.3",
     "@types/bcrypt": "^3.0.0",
     "@types/dotenv": "^8.2.0",
     "@types/jest": "^26.0.15",
+    "@types/mongoose": "^5.10.1",
     "@types/node": "^14.14.10",
     "@typescript-eslint/eslint-plugin": "^3.10.1",
     "eslint": "^7.14.0",
@@ -31,6 +33,7 @@
   },
   "dependencies": {
     "bcrypt": "^5.0.0",
-    "dotenv": "^8.2.0"
+    "dotenv": "^8.2.0",
+    "mongoose": "^5.10.18"
   }
 }
