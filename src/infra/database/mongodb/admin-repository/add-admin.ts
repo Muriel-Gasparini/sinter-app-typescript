@@ -7,7 +7,7 @@ import Admin from '../models/admin'
 export class AddAdminMongo implements addAdminAccountRepository {
   async add (account: account): Promise<adminModel> {
     const mongoResult = await (await Admin.create(account)).toObject()
-    const adminDoc = await mongoHelper.map(mongoResult)
-    return adminDoc
+
+    return await mongoHelper.map(mongoResult)
   }
 }
