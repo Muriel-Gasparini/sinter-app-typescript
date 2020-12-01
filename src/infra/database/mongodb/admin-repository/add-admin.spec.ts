@@ -1,12 +1,12 @@
-import { connect, disconnect } from 'mongoose'
+import MongoHelper from '../../helpers/mongo-helper'
 import { AddAdminMongo } from './add-admin'
 
 describe('AddAdminAccountRepository', () => {
   beforeAll(async () => {
-    await connect(process.env.MONGO_URL, { useNewUrlParser: true, useUnifiedTopology: true })
+    await MongoHelper.connectToMongo(process.env.MONGO_URL)
   })
   afterAll(async () => {
-    await disconnect()
+    await MongoHelper.disconnectMongo()
   })
   test('Make sure the account is successfully returned', async () => {
     const sut = new AddAdminMongo()
