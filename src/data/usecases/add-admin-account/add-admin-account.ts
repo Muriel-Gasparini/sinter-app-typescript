@@ -12,14 +12,12 @@ export class AddAdminAccount implements addAdminAccount {
   }
 
   async add (account: account): Promise<adminModel> {
-    const hash = await this.encrypter.crypt(account.password)
+    const hashPassword = await this.encrypter.crypt(account.password)
 
     const { password, ...accountWithNoPassword } = account
 
-    const accountWithHashPassword = Object.assign({}, accountWithNoPassword, { password: hash })
+    const accountWithHashPassword = Object.assign({}, accountWithNoPassword, { password: hashPassword })
 
-    const adminAccount = await this.addAdminAccountRepository.add(accountWithHashPassword)
-
-    return adminAccount
+    return await this.addAdminAccountRepository.add(accountWithHashPassword)
   }
 }
