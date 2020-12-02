@@ -67,9 +67,12 @@ describe('AddAdminAccount', () => {
       password: 'hashed_password'
     })
     expect(response).toEqual({
-      id: 'any_id',
-      name: 'any_name',
-      password: 'hashed_password'
+      isError: false,
+      account: {
+        id: 'any_id',
+        name: 'any_name',
+        password: 'hashed_password'
+      }
     })
   })
 })

@@ -1,15 +1,17 @@
 import { CreateAdminAccount } from './create-admin-account'
-import { addAdminAccount, account } from '../../domain/usecases/add-admin-account'
-import { adminModel } from '../../domain/model/admin'
+import { addAdminAccount, account, responseAddAdminAccount } from '../../domain/usecases/add-admin-account'
 import { envChecker, responseEnvChecker } from '../protocols'
 
 const makeAddAdminAccount = (): addAdminAccount => {
   class AddAdminAccountStub implements addAdminAccount {
-    async add (account: account): Promise<adminModel> {
+    async add (account: account): Promise<responseAddAdminAccount> {
       return {
-        id: 'any_id',
-        name: 'any_name',
-        password: 'any_password'
+        isError: false,
+        account: {
+          id: 'any_id',
+          name: 'any_name',
+          password: 'any_password'
+        }
       }
     }
   }
@@ -83,9 +85,8 @@ describe('Create Admin Account', () => {
     expect(response.body).toBe('The provided key is invalid')
   })
 
-  test('Make sure AddAdminAccount is called if the correct body is sent', async () => {
-    const { sut, AddAdminAccountStub } = makeSut()
-    const AddAdminAccountStubRequest = jest.spyOn(AddAdminAccountStub, 'add')
+  test('Make sure return account if AddAdminAccount is called with the correct body', async () => {
+    const { sut } = makeSut()
     const httpRequest = {
       body: {
         name: 'any_name',
@@ -94,8 +95,27 @@ describe('Create Admin Account', () => {
       }
     }
     const response = await sut.handle(httpRequest)
-    expect(AddAdminAccountStubRequest).toHaveBeenCalledWith(httpRequest.body)
     expect(response.status).toBe(200)
-    expect(response.body).toBe('The manager account has been created')
+    expect(response.body).toEqual({
+      id: 'any_id',
+      name: 'any_name',
+      password: 'any_password'
+    })
+  })
+
+  test('Make sure AddAdminAccount return an error if an error ocurred', async () => {
+    const { sut, AddAdminAccountStub } = makeSut()
+    // eslint-disable-next-line prefer-promise-reject-errors
+    jest.spyOn(AddAdminAccountStub, 'add').mockReturnValueOnce(new Promise((resolve, reject) => reject({ isError: true, message: 'An error occurred while trying to create admin' })))
+    const httpRequest = {
+      body: {
+        name: 'any_name',
+        password: 'any_password',
+        key: 'valid_key'
+      }
+    }
+    const response = await sut.handle(httpRequest)
+    expect(response.status).toBe(500)
+    expect(response.body).toBe('An error occurred while trying to create admin')
   })
 })
