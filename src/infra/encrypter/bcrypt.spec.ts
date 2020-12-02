@@ -5,6 +5,6 @@ describe('Bcrypt Adapter', () => {
     const sut = new BcryptAdapter()
     const password = 'any_password'
     const hashedPassword = await sut.crypt(password)
-    expect(password).not.toBe(hashedPassword)
+    expect(hashedPassword).toBeTruthy()
   })
 })
