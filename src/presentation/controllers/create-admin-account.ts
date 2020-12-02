@@ -24,10 +24,12 @@ export class CreateAdminAccount {
 
       if (responseEnvChecker.isError) return badRequest(responseEnvChecker.message)
 
-      await this.AddAdminAccount.add(request.body)
+      const responseAddAdminAccount = await this.AddAdminAccount.add(request.body)
 
-      return okRequest('The manager account has been created')
+      return okRequest(responseAddAdminAccount.account)
     } catch (error) {
+      if (error.isError) return serverError(error.message)
+
       return serverError('Sorry a server error occurred')
     }
   }

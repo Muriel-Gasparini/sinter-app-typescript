@@ -5,6 +5,12 @@ export interface account {
   password: string
 }
 
+export interface responseAddAdminAccount {
+  isError: boolean
+  message?: string
+  account?: adminModel
+}
+
 export interface addAdminAccount {
-  add: (account: account) => Promise<adminModel>
+  add: (account: account) => Promise<responseAddAdminAccount>
 }

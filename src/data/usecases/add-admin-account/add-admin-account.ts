@@ -1,5 +1,4 @@
-import { adminModel } from '../../../domain/model/admin'
-import { account, addAdminAccount } from '../../../domain/usecases/add-admin-account'
+import { account, addAdminAccount, responseAddAdminAccount } from '../../../domain/usecases/add-admin-account'
 import { addAdminAccountRepository, encrypter } from './add-admin-account-protocols'
 
 export class AddAdminAccount implements addAdminAccount {
@@ -11,13 +10,23 @@ export class AddAdminAccount implements addAdminAccount {
     this.addAdminAccountRepository = addAdminAccountRepository
   }
 
-  async add (account: account): Promise<adminModel> {
-    const hashPassword = await this.encrypter.crypt(account.password)
+  async add (account: account): Promise<responseAddAdminAccount> {
+    try {
+      const hashPassword = await this.encrypter.crypt(account.password)
 
-    const { password, ...accountWithNoPassword } = account
+      const { password, ...accountWithNoPassword } = account
 
-    const accountWithHashPassword = Object.assign({}, accountWithNoPassword, { password: hashPassword })
+      const accountWithHashPassword = Object.assign({}, accountWithNoPassword, { password: hashPassword })
 
-    return await this.addAdminAccountRepository.add(accountWithHashPassword)
+      return {
+        isError: false,
+        account: await this.addAdminAccountRepository.add(accountWithHashPassword)
+      }
+    } catch (error) {
+      return {
+        isError: true,
+        message: 'An error occurred while trying to create admin'
+      }
+    }
   }
 }
