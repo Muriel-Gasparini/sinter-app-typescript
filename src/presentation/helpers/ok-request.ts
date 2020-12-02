@@ -1,8 +1,8 @@
 import { httpResponse } from '../protocols'
 
-export const okRequest = (message: string): httpResponse => {
+export const okRequest = (body: any): httpResponse => {
   return {
     status: 200,
-    body: message
+    body: body
   }
 }

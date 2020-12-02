@@ -1,8 +1,8 @@
 import { httpResponse } from '../protocols'
 
-export const serverError = (message: string): httpResponse => {
+export const serverError = (body: string): httpResponse => {
   return {
     status: 500,
-    body: message
+    body: body
   }
 }

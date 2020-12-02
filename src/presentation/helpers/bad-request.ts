@@ -1,8 +1,8 @@
 import { httpResponse } from '../protocols'
 
-export const badRequest = (message: string): httpResponse => {
+export const badRequest = (body: string): httpResponse => {
   return {
     status: 400,
-    body: message
+    body: body
   }
 }
