@@ -1,7 +1,7 @@
 import { httpRequest, httpResponse, envChecker, addAdminAccount, Controller } from '../protocols'
 import { badRequest, okRequest, serverError } from '../helpers'
 
-export class CreateAdminAccount implements Controller {
+export class CreateAdminController implements Controller {
   private readonly envChecker: envChecker
   private readonly AddAdminAccount: addAdminAccount
 

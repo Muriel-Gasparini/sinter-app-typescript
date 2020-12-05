@@ -1,4 +1,4 @@
-import { CreateAdminAccount } from './create-admin-account'
+import { CreateAdminController } from './create-admin-account'
 import { addAdminAccount, account, responseAddAdminAccount } from '../../domain/usecases/add-admin-account'
 import { envChecker, responseEnvChecker } from '../protocols'
 
@@ -30,7 +30,7 @@ const makeEnvChecker = (): envChecker => {
 }
 
 interface sutTypes {
-  sut: CreateAdminAccount
+  sut: CreateAdminController
   envCheckerStub: envChecker
   AddAdminAccountStub: addAdminAccount
 }
@@ -38,7 +38,7 @@ interface sutTypes {
 const makeSut = (): sutTypes => {
   const envCheckerStub = makeEnvChecker()
   const AddAdminAccountStub = makeAddAdminAccount()
-  const sut = new CreateAdminAccount(envCheckerStub, AddAdminAccountStub)
+  const sut = new CreateAdminController(envCheckerStub, AddAdminAccountStub)
   return {
     sut,
     envCheckerStub,
