@@ -26,6 +26,8 @@ export class CreateAdminController implements Controller {
 
       const responseAddAdminAccount = await this.AddAdminAccount.add(request.body)
 
+      if (responseAddAdminAccount.isError) return badRequest(responseAddAdminAccount.message)
+
       return okRequest(responseAddAdminAccount.account)
     } catch (error) {
       if (error.isError) return serverError(error.message)
