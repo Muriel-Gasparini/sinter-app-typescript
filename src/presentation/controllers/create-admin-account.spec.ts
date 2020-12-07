@@ -1,4 +1,4 @@
-import { CreateAdminController } from './create-admin-account'
+import { CreateAdminController } from './create-admin-controller'
 import { addAdminAccount, account, responseAddAdminAccount } from '../../domain/usecases/add-admin-account'
 import { envChecker, responseEnvChecker } from '../protocols'
 
