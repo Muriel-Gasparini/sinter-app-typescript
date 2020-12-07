@@ -1,13 +1,15 @@
-import { httpRequest, httpResponse, envChecker, addAdminAccount, Controller } from '../protocols'
+import { httpRequest, httpResponse, envChecker, addAdminAccount, Controller, bodyValidator } from '../protocols'
 import { badRequest, okRequest, serverError } from '../helpers'
 
 export class CreateAdminController implements Controller {
   private readonly envChecker: envChecker
   private readonly AddAdminAccount: addAdminAccount
+  private readonly bodyValidator: bodyValidator
 
-  constructor (envChecker: envChecker, AddAdminAccount: addAdminAccount) {
+  constructor (envChecker: envChecker, AddAdminAccount: addAdminAccount, bodyValidator: bodyValidator) {
     this.envChecker = envChecker
     this.AddAdminAccount = AddAdminAccount
+    this.bodyValidator = bodyValidator
   }
 
   async handle (request: httpRequest): Promise<httpResponse> {
@@ -19,6 +21,10 @@ export class CreateAdminController implements Controller {
       for (const input of requiredInputs) {
         if (!request.body[input]) return badRequest('Make sure you have sent all the required fields')
       }
+
+      const responseBodyValidator = this.bodyValidator.validate(request.body)
+
+      if (responseBodyValidator.isError) return badRequest(responseBodyValidator.message)
 
       const responseEnvChecker = this.envChecker.check(request.body.key)
 
