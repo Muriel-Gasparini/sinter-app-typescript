@@ -1,6 +1,6 @@
 import { CreateAdminController } from './create-admin-controller'
 import { addAdminAccount, account, responseAddAdminAccount } from '../../domain/usecases/add-admin-account'
-import { envChecker, responseEnvChecker } from '../protocols'
+import { bodyValidator, envChecker, responseBodyValidator, responseEnvChecker } from '../protocols'
 
 const makeAddAdminAccount = (): addAdminAccount => {
   class AddAdminAccountStub implements addAdminAccount {
@@ -18,6 +18,17 @@ const makeAddAdminAccount = (): addAdminAccount => {
   return new AddAdminAccountStub()
 }
 
+const makeBodyValidator = (): bodyValidator => {
+  class BodyValidatorStub implements bodyValidator {
+    validate (body: any): responseBodyValidator {
+      return {
+        isError: false
+      }
+    }
+  }
+  return new BodyValidatorStub()
+}
+
 const makeEnvChecker = (): envChecker => {
   class EnvCheckerStub implements envChecker {
     check (key: string): responseEnvChecker {
@@ -33,16 +44,19 @@ interface sutTypes {
   sut: CreateAdminController
   envCheckerStub: envChecker
   AddAdminAccountStub: addAdminAccount
+  bodyValidatorStub: bodyValidator
 }
 
 const makeSut = (): sutTypes => {
   const envCheckerStub = makeEnvChecker()
   const AddAdminAccountStub = makeAddAdminAccount()
-  const sut = new CreateAdminController(envCheckerStub, AddAdminAccountStub)
+  const bodyValidatorStub = makeBodyValidator()
+  const sut = new CreateAdminController(envCheckerStub, AddAdminAccountStub, bodyValidatorStub)
   return {
     sut,
     envCheckerStub,
-    AddAdminAccountStub
+    AddAdminAccountStub,
+    bodyValidatorStub
   }
 }
 
@@ -117,5 +131,20 @@ describe('Create Admin Account', () => {
     const response = await sut.handle(httpRequest)
     expect(response.status).toBe(500)
     expect(response.body).toBe('An error occurred while trying to create admin')
+  })
+
+  test('Make sure bodyValidator is called', async () => {
+    const { sut, bodyValidatorStub } = makeSut()
+    const bodyValidatorCall = jest.spyOn(bodyValidatorStub, 'validate')
+    const httpRequest = {
+      body: {
+        name: 'any_name',
+        password: 'any_password',
+        key: 'valid_key'
+      }
+    }
+    const response = await sut.handle(httpRequest)
+    expect(bodyValidatorCall).toHaveBeenCalledWith(httpRequest.body)
+    expect(response.status).toBe(200)
   })
 })
