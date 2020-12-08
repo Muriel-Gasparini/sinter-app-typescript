@@ -1,6 +1,7 @@
 import { CreateAdminController } from './create-admin-controller'
 import { addAdminAccount, account, responseAddAdminAccount } from '../../domain/usecases/add-admin-account'
-import { bodyValidator, envChecker, responseBodyValidator, responseEnvChecker } from '../protocols'
+import { bodyValidator, envChecker, responseBodyValidator, responseEnvChecker, schema } from '../protocols'
+import { addadminSchema } from '../../utils/body-validator/schemas/add-admin'
 
 const makeAddAdminAccount = (): addAdminAccount => {
   class AddAdminAccountStub implements addAdminAccount {
@@ -20,7 +21,7 @@ const makeAddAdminAccount = (): addAdminAccount => {
 
 const makeBodyValidator = (): bodyValidator => {
   class BodyValidatorStub implements bodyValidator {
-    validate (body: any): responseBodyValidator {
+    validate (body: any, schema: schema): responseBodyValidator {
       return {
         isError: false
       }
@@ -144,7 +145,7 @@ describe('Create Admin Account', () => {
       }
     }
     const response = await sut.handle(httpRequest)
-    expect(bodyValidatorCall).toHaveBeenCalledWith(httpRequest.body)
+    expect(bodyValidatorCall).toHaveBeenCalledWith(httpRequest.body, addadminSchema)
     expect(response.status).toBe(200)
   })
 })
