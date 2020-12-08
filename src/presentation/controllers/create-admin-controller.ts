@@ -1,5 +1,6 @@
 import { httpRequest, httpResponse, envChecker, addAdminAccount, Controller, bodyValidator } from '../protocols'
 import { badRequest, okRequest, serverError } from '../helpers'
+import { addadminSchema } from '../../utils/body-validator/schemas/add-admin'
 
 export class CreateAdminController implements Controller {
   private readonly envChecker: envChecker
@@ -22,7 +23,7 @@ export class CreateAdminController implements Controller {
         if (!request.body[input]) return badRequest('Make sure you have sent all the required fields')
       }
 
-      const responseBodyValidator = this.bodyValidator.validate(request.body)
+      const responseBodyValidator = this.bodyValidator.validate(request.body, addadminSchema)
 
       if (responseBodyValidator.isError) return badRequest(responseBodyValidator.message)
 
