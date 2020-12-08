@@ -1,7 +1,7 @@
 import { CreateAdminController } from '../../presentation/controllers/create-admin-controller'
 import { EnvCheckerAdapter } from '../../utils/env-checker-adapter'
 import { BodyValidatorAdapter } from '../../utils/body-validator/body-validator'
-import { AddAdminAccount } from '../../data/usecases/add-admin-account/add-admin-account'
+import { AddAdminAccount } from '../../data/usecases/admin/add-admin-account'
 import { BcryptAdapter } from '../../infra/encrypter/bcrypt'
 import { AddAdminMongo } from '../../infra/database/mongodb/admin-repository/add-admin'
 
